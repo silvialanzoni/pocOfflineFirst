@@ -1,7 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Routes, Route, Link } from 'react-router-dom';
-import ProductList from './ProductList';
-import Cart from './Cart';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Route, Routes, Link } from 'react-router-dom';
 
 const PRODUCTS = [
   { id: 1, name: 'Product A', price: 20 },
@@ -11,27 +9,34 @@ const PRODUCTS = [
 
 function App() {
   const [cart, setCart] = useState([]);
-  const [offlineData, setOfflineData] = useState([]);
 
-  const syncOfflineData = () => {
-    if (navigator.onLine && offlineData.length) {
-      console.log('Syncing offline data:', offlineData);
-      setOfflineData([]);
-    }
-  };
+  // Sincronizza dati offline (placeholder)
+  const syncOfflineData = useCallback(() => {
+    console.log('Syncing offline data...');
+  }, []);
 
   useEffect(() => {
     window.addEventListener('online', syncOfflineData);
     return () => {
       window.removeEventListener('online', syncOfflineData);
     };
-  }, [offlineData]);
+  }, [syncOfflineData]);
 
-  const addToCart = (product) => {
-    setCart([...cart, product]);
-    if (!navigator.onLine) {
-      setOfflineData([...offlineData, { action: 'ADD_TO_CART', product }]);
+  // Carica il carrello salvato da Local Storage
+  useEffect(() => {
+    const savedCart = localStorage.getItem('cart');
+    if (savedCart) {
+      setCart(JSON.parse(savedCart));
     }
+  }, []);
+
+  // Aggiungi al carrello e salva su Local Storage
+  const addToCart = (product) => {
+    setCart((prevCart) => {
+      const updatedCart = [...prevCart, product];
+      localStorage.setItem('cart', JSON.stringify(updatedCart));
+      return updatedCart;
+    });
   };
 
   return (
@@ -42,7 +47,43 @@ function App() {
       <Routes>
         <Route path="/" element={<ProductList products={PRODUCTS} addToCart={addToCart} />} />
         <Route path="/cart" element={<Cart cart={cart} />} />
+        <Route path="*" element={<h1>Page Not Found</h1>} />
       </Routes>
+    </div>
+  );
+}
+
+function ProductList({ products, addToCart }) {
+  return (
+    <div>
+      <h1>Products</h1>
+      <ul>
+        {products.map((product) => (
+          <li key={product.id}>
+            {product.name} - ${product.price}{' '}
+            <button onClick={() => addToCart(product)}>Add to Cart</button>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+function Cart({ cart }) {
+  return (
+    <div>
+      <h1>Cart</h1>
+      {cart.length === 0 ? (
+        <p>Your cart is empty.</p>
+      ) : (
+        <ul>
+          {cart.map((item, index) => (
+            <li key={index}>
+              {item.name} - ${item.price}
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }
