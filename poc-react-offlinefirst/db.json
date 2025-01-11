@@ -1,12 +1,59 @@
 {
+  "products": [
+    {
+      "id": "1",
+      "name": "Product A",
+      "price": 20,
+      "available": true,
+      "stock": 10
+    },
+    {
+      "id": "2",
+      "name": "Product B",
+      "price": 40,
+      "available": true,
+      "stock": 5
+    },
+    {
+      "id": "3",
+      "name": "Product C",
+      "price": 60,
+      "available": true,
+      "stock": 2
+    }
+  ],
   "orders": [
     {
       "0": {
+        "id": 1,
+        "name": "Product A",
+        "price": 20,
+        "quantity": 3
+      },
+      "id": "07df"
+    },
+    {
+      "0": {
+        "id": 1,
+        "name": "Product A",
+        "price": 20,
+        "quantity": 10
+      },
+      "id": "81de"
+    },
+    {
+      "0": {
+        "id": 1,
+        "name": "Product A",
+        "price": 20,
+        "quantity": 5
+      },
+      "1": {
         "id": 3,
         "name": "Product C",
         "price": 60
       },
-      "id": "f13e"
+      "id": "bee8"
     },
     {
       "0": {
@@ -19,7 +66,98 @@
         "name": "Product B",
         "price": 40
       },
-      "id": "1cda"
+      "id": "8cac"
+    },
+    {
+      "0": {
+        "id": 1,
+        "name": "Product A",
+        "price": 20
+      },
+      "1": {
+        "id": 2,
+        "name": "Product B",
+        "price": 40
+      },
+      "2": {
+        "id": 3,
+        "name": "Product C",
+        "price": 60
+      },
+      "id": "6fff"
+    },
+    {
+      "0": {
+        "id": 1,
+        "name": "Product A",
+        "price": 20
+      },
+      "1": {
+        "id": 2,
+        "name": "Product B",
+        "price": 40
+      },
+      "2": {
+        "id": 3,
+        "name": "Product C",
+        "price": 60
+      },
+      "id": "0732"
+    },
+    {
+      "0": {
+        "id": 1,
+        "name": "Product A",
+        "price": 20
+      },
+      "1": {
+        "id": 2,
+        "name": "Product B",
+        "price": 40
+      },
+      "id": "c8c5"
+    },
+    {
+      "0": {
+        "id": 1,
+        "name": "Product A",
+        "price": 20,
+        "quantity": 10
+      },
+      "1": {
+        "id": 3,
+        "name": "Product C",
+        "price": 60,
+        "quantity": 2
+      },
+      "id": "9901"
+    },
+    {
+      "0": {
+        "id": 1,
+        "name": "Product A",
+        "price": 20,
+        "quantity": 10
+      },
+      "id": "b442"
+    },
+    {
+      "0": {
+        "id": 1,
+        "name": "Product A",
+        "price": 20,
+        "quantity": 1
+      },
+      "id": "eba2"
+    },
+    {
+      "0": {
+        "id": 1,
+        "name": "Product A",
+        "price": 20,
+        "quantity": 10
+      },
+      "id": "63a5"
     }
   ]
 }

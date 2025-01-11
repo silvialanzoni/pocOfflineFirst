@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, Link } from 'react-router-dom';
-import db from './db'; // Importa la configurazione di IndexedDB
+import db from './db';
 
 const PRODUCTS = [
   { id: 1, name: 'Product A', price: 20 },
@@ -11,7 +11,7 @@ const PRODUCTS = [
 function App() {
   const [cart, setCart] = useState([]);
 
-  // Carica il carrello salvato da IndexedDB
+  // Carica il carrello da IndexedDB
   useEffect(() => {
     const loadCart = async () => {
       const savedCart = await db.cart.toArray();
@@ -20,65 +20,112 @@ function App() {
     loadCart();
   }, []);
 
-  // Aggiungi un prodotto al carrello e salva su IndexedDB
+  // Aggiungi un prodotto al carrello
   const addToCart = async (product) => {
-    await db.cart.add(product);
+    const existingProduct = await db.cart.get(product.id);
+    if (existingProduct) {
+      existingProduct.quantity = (existingProduct.quantity || 0) + 1; // Incrementa come numero
+      await db.cart.put(existingProduct);
+    } else {
+      await db.cart.add({ ...product, quantity: 1 }); // Valore iniziale
+    }
     const updatedCart = await db.cart.toArray();
-    console.log('Updated Cart:', updatedCart);
     setCart(updatedCart);
   };
+  
+  const updateQuantity = async (id, change) => {
+    const product = await db.cart.get(id);
+    if (product) {
+      product.quantity = (product.quantity || 0) + change; // Incrementa/Decrementa come numero
+      if (product.quantity <= 0) {
+        await db.cart.delete(id);
+      } else {
+        await db.cart.put(product);
+      }
+      const updatedCart = await db.cart.toArray();
+      setCart(updatedCart);
+    }
+  };
+  
 
-  // Rimuovi un prodotto dal carrello e aggiorna IndexedDB
+  // Rimuovi un prodotto dal carrello
   const removeFromCart = async (id) => {
     await db.cart.delete(id);
     const updatedCart = await db.cart.toArray();
     setCart(updatedCart);
   };
 
-  // Sincronizza gli ordini offline con il backend quando torni online
-  const syncOfflineOrders = async () => {
-    if (navigator.onLine) {
-      const offlineOrders = await db.offlineOrders.toArray();
-      for (const order of offlineOrders) {
-        try {
-          await fetch('http://localhost:4000/orders', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(order.data),
-          });
-          console.log('Order synced:', order.data);
-          await db.offlineOrders.delete(order.id); // Rimuovi l'ordine dopo la sincronizzazione
-        } catch (error) {
-          console.error('Failed to sync order:', order.data, error);
+  // Valida il carrello con il backend
+  const validateCart = async () => {
+    const validatedCart = [];
+    const unavailableProducts = [];
+  
+    for (const item of cart) {
+      try {
+        const response = await fetch(`http://localhost:4000/products/${item.id}`);
+        if (!response.ok) {
+          throw new Error(`Product ${item.id} not found`);
         }
+        const product = await response.json();
+  
+        if (product.available) {
+          if (product.stock >= item.quantity) {
+            validatedCart.push(item); // Quantità sufficiente, aggiungi al carrello validato
+          } else {
+            // Stock insufficiente, aggiorna la quantità
+            unavailableProducts.push({
+              ...item,
+              maxAvailable: product.stock,
+            });
+            validatedCart.push({ ...item, quantity: product.stock });
+          }
+        } else {
+          // Prodotto non disponibile
+          unavailableProducts.push({ ...item, maxAvailable: 0 });
+        }
+      } catch (error) {
+        console.error(`Error validating product ${item.name}:`, error);
       }
     }
-  };
-
-  // Aggiungi un ordine a IndexedDB quando offline
-  const placeOrder = async () => {
-    if (navigator.onLine) {
-      console.log('Placing order online...');
-      await fetch('http://localhost:4000/orders', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(cart),
-      });
-    } else {
-      console.log('Saving order offline...');
-      await db.offlineOrders.add({ data: cart });
+  
+    setCart(validatedCart);
+  
+    if (unavailableProducts.length > 0) {
+      alert(
+        `The following products were updated due to stock limitations:\n` +
+          unavailableProducts
+            .map(
+              (p) =>
+                `${p.name}: requested ${p.quantity}, available ${p.maxAvailable}`
+            )
+            .join('\n')
+      );
     }
-    // Svuota il carrello dopo l'ordine
-    await db.cart.clear();
-    setCart([]);
+  
+    return validatedCart;
   };
+  
 
-  useEffect(() => {
-    window.addEventListener('online', syncOfflineOrders);
-    return () => {
-      window.removeEventListener('online', syncOfflineOrders);
-    };
-  }, []);
+  // Effettua un ordine
+  const placeOrder = async () => {
+    const validCart = await validateCart();
+    if (validCart.length > 0) {
+      try {
+        await fetch('http://localhost:4000/orders', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(validCart),
+        });
+        await db.cart.clear();
+        setCart([]);
+        console.log('Order placed successfully!');
+      } catch (error) {
+        console.error('Error placing order:', error);
+      }
+    } else {
+      console.log('Order could not be placed due to validation errors.');
+    }
+  };
 
   return (
     <div>
@@ -87,7 +134,7 @@ function App() {
       </nav>
       <Routes>
         <Route path="/" element={<ProductList products={PRODUCTS} addToCart={addToCart} />} />
-        <Route path="/cart" element={<Cart cart={cart} removeFromCart={removeFromCart} placeOrder={placeOrder} />} />
+        <Route path="/cart" element={<Cart cart={cart} updateQuantity={updateQuantity} removeFromCart={removeFromCart} placeOrder={placeOrder} />} />
       </Routes>
     </div>
   );
@@ -109,7 +156,7 @@ function ProductList({ products, addToCart }) {
   );
 }
 
-function Cart({ cart, removeFromCart, placeOrder }) {
+function Cart({ cart, updateQuantity, removeFromCart, placeOrder }) {
   return (
     <div>
       <h1>Cart</h1>
@@ -119,7 +166,9 @@ function Cart({ cart, removeFromCart, placeOrder }) {
         <ul>
           {cart.map((item) => (
             <li key={item.id}>
-              {item.name} - ${item.price}{' '}
+              {item.name} - ${item.price} x {item.quantity}{' '}
+              <button onClick={() => updateQuantity(item.id, 1)}>+</button>
+              <button onClick={() => updateQuantity(item.id, -1)}>-</button>
               <button onClick={() => removeFromCart(item.id)}>Remove</button>
             </li>
           ))}
