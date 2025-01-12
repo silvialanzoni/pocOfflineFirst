@@ -1,0 +1,26 @@
+.cart-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    border-bottom: 1px solid #dee2e6;
+  }
+  
+  .cart-item:last-child {
+    border-bottom: none;
+  }
+  
+  .cart-total {
+    text-align: right;
+    font-size: 1.2rem;
+    font-weight: bold;
+    padding: 1rem;
+  }
+  
+  .offline-message {
+    color: #dc3545;
+    font-weight: bold;
+    text-align: center;
+    margin-top: 1rem;
+  }
+  

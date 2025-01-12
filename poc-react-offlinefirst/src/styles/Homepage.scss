@@ -1,0 +1,152 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+.homepage-container {
+  font-family: 'Poppins', sans-serif;
+  color: #333;
+  margin: -8px;
+}
+
+.header {
+  background-color: #FAF1E5;
+  padding: 10px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    .user-greeting {
+      color: #555;
+      font-size: 14px;
+    }
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+
+    .icon-container {
+      cursor: pointer;
+    }
+  }
+}
+
+.top-bar {
+  background-color: #003D29;
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  padding: 10px 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+  .top-bar-left {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+
+    .website-logo {
+      width: 40px;
+      height: 40px;
+    }
+
+    .website-title {
+      font-size: 24px;
+      font-weight: bold;
+      letter-spacing: 1px;
+    }
+
+    .top-bar-menu {
+      display: flex;
+      gap: 25px;
+      margin-left: 30px;
+
+      .menu-item {
+        color: #FFFFFF;
+        text-decoration: none;
+        font-size: 16px;
+        transition: color 0.3s;
+
+        &:hover {
+          color: #A8E6CF;
+        }
+      }
+    }
+  }
+}
+
+search-bar-section{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+}
+.search-bar {
+  margin: 20px ;
+
+  .search-input {
+    width: 50%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+  }
+}
+
+.search-button{
+  border-radius: 50px;
+  width: 70px;
+  padding: 8px;
+  margin-left: 20px;
+  font-family: 'Poppins', sans-serif;
+  background-color: #003D29;
+  border-color:#FAF1E5;
+  color:#FAF1E5 ;
+}
+
+.banner {
+  background-color: #EAF8E6;
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+
+  .banner-title { 
+    font-size: 24px;
+    margin: 0 0 10px;
+  }
+
+  .banner-image { 
+    font-size: 24px;
+    margin: 0 0 10px;
+  }
+
+  .banner-description {
+    font-size: 16px;
+    margin: 0;
+  }
+}
+
+.categories {
+  display: flex;
+  justify-content: space-around;
+  background-color: #003D29;
+  margin-bottom: 40px;
+  .special-offer-image{
+    width:500px;
+    margin-top:40px;
+  }
+  .category {
+    text-decoration: none;
+    text-align: center;
+    color: #FAF1E5;
+    font-size: 18px;
+    transition: transform 0.3s;
+
+    &:hover {
+      transform: scale(1.1);
+    }
+  }
+}

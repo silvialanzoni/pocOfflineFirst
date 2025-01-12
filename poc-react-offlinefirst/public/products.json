@@ -1,0 +1,19 @@
+{
+    "fruits": [
+      { "id": 1, "name": "Apple", "price": 1.2, "image": "https://via.placeholder.com/150?text=Apple" },
+      { "id": 2, "name": "Banana", "price": 0.8, "image": "https://via.placeholder.com/150?text=Banana" },
+      { "id": 3, "name": "Cherry", "price": 2.5, "image": "https://via.placeholder.com/150?text=Cherry" },
+      { "id": 4, "name": "Melon", "price": 1.2, "image": "https://via.placeholder.com/150?text=Apple" },
+      { "id": 5, "name": "Strawberry", "price": 0.8, "image": "https://via.placeholder.com/150?text=Banana" },
+      { "id": 6, "name": "Cranberry", "price": 2.5, "image": "https://via.placeholder.com/150?text=Cherry" }
+    ],
+    "vegetables": [
+      { "id": 7, "name": "Carrot", "price": 0.9, "image": "https://via.placeholder.com/150?text=Carrot" },
+      { "id": 8, "name": "Broccoli", "price": 1.5, "image": "https://via.placeholder.com/150?text=Broccoli" },
+      { "id": 9, "name": "Spinach", "price": 1.0, "image": "https://via.placeholder.com/150?text=Spinach" },
+      { "id": 10, "name": "Tomato", "price": 0.9, "image": "https://via.placeholder.com/150?text=Carrot" },
+      { "id": 11, "name": "Salad", "price": 1.5, "image": "https://via.placeholder.com/150?text=Broccoli" },
+      { "id": 12, "name": "Broly", "price": 1.0, "image": "https://via.placeholder.com/150?text=Spinach" }
+    ]
+  }
+  
