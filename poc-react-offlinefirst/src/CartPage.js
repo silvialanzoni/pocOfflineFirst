@@ -6,9 +6,9 @@ function CartPage({ cart, updateQuantity, removeFromCart, placeOrder }) {
 
   return (
     <div className="cart-container">
-      <h1>🛒 Il Tuo Carrello</h1>
+      <h1>🛒 Your cart</h1>
       {cart.length === 0 ? (
-        <p className="empty-cart-message">Il tuo carrello è vuoto. Aggiungi subito qualche articolo sportivo! 🏀🎾</p>
+        <p className="empty-cart-message">Your cart is now empty! Enjoy some shopping! 🏀🎾</p>
       ) : (
         <>
           <ul className="cart-list">

@@ -208,8 +208,7 @@ h2 {
 
 /* 📦 Contenitore della sezione */
 .container {
-  padding: 2rem;
-}
+  padding: 2rem;}
 
 /* 🏋️‍♂️ Griglia dei prodotti */
 .product-grid {
@@ -381,5 +380,11 @@ h2 {
   .checkout-btn:hover {
     background-color: #379683;
     transform: translateY(-3px);
+  }
+  
+  .banner-image {
+    width: 100%;
+    height: fit-content;
+    object-fit: cover; /* Fa in modo che l'immagine si adatti riempiendo lo spazio */
   }
   

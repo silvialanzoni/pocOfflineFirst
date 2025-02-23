@@ -39,6 +39,13 @@ const PRODUCTS = [
 function HomePage({ addToCart }) {
   return (
     <>
+    <div>
+    <img
+    src='../banner.jpg'
+    alt='banner'
+    className="banner-image"
+    />
+    </div>
     <div className="container">
       <h2>Tennis Collection</h2>
       <div className="product-grid">
