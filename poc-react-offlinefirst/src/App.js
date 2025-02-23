@@ -11,7 +11,6 @@ const PRODUCTS = [
 function App() {
   const [cart, setCart] = useState([]);
 
-  // Carica il carrello da IndexedDB
   useEffect(() => {
     const loadCart = async () => {
       const savedCart = await db.cart.toArray();
@@ -20,23 +19,39 @@ function App() {
     loadCart();
   }, []);
 
-  // Aggiungi un prodotto al carrello
+  // 🔄 Sincronizza ordini offline e valida al ritorno online
+  useEffect(() => {
+    const syncOfflineOrders = async () => {
+      const offlineOrders = await db.offlineOrders.toArray();
+      if (offlineOrders.length > 0) {
+        console.log(`🔗 Sincronizzando ${offlineOrders.length} ordini offline...`);
+        for (const order of offlineOrders) {
+          await sendOrderToServer(order.data);
+          await db.offlineOrders.delete(order.id);
+        }
+        console.log('🌐 Tutti gli ordini offline validi sono stati sincronizzati.');
+      }
+    };
+    window.addEventListener('online', syncOfflineOrders);
+    return () => window.removeEventListener('online', syncOfflineOrders);
+  }, []);
+
   const addToCart = async (product) => {
     const existingProduct = await db.cart.get(product.id);
     if (existingProduct) {
-      existingProduct.quantity = (existingProduct.quantity || 0) + 1; // Incrementa come numero
+      existingProduct.quantity = (existingProduct.quantity || 0) + 1;
       await db.cart.put(existingProduct);
     } else {
-      await db.cart.add({ ...product, quantity: 1 }); // Valore iniziale
+      await db.cart.add({ ...product, quantity: 1 });
     }
     const updatedCart = await db.cart.toArray();
     setCart(updatedCart);
   };
-  
+
   const updateQuantity = async (id, change) => {
     const product = await db.cart.get(id);
     if (product) {
-      product.quantity = (product.quantity || 0) + change; // Incrementa/Decrementa come numero
+      product.quantity = (product.quantity || 0) + change;
       if (product.quantity <= 0) {
         await db.cart.delete(id);
       } else {
@@ -46,91 +61,109 @@ function App() {
       setCart(updatedCart);
     }
   };
-  
 
-  // Rimuovi un prodotto dal carrello
   const removeFromCart = async (id) => {
     await db.cart.delete(id);
     const updatedCart = await db.cart.toArray();
     setCart(updatedCart);
   };
 
-  // Valida il carrello con il backend
-  const validateCart = async () => {
+  // 📦 🔔 ✅ Controlla disponibilità con gestione offline
+  const validateCart = async (customCart) => {
+    const cartToValidate = customCart || cart;
+    if (!navigator.onLine) {
+      console.warn('⚡ Sei offline: validazione del carrello saltata.');
+      return cartToValidate;
+    }
+
     const validatedCart = [];
     const unavailableProducts = [];
-  
-    for (const item of cart) {
+
+    for (const item of cartToValidate) {
       try {
         const response = await fetch(`http://localhost:4000/products/${item.id}`);
-        if (!response.ok) {
-          throw new Error(`Product ${item.id} not found`);
-        }
+        if (!response.ok) throw new Error(`Product ${item.id} not found`);
         const product = await response.json();
-  
-        if (product.available) {
-          if (product.stock >= item.quantity) {
-            validatedCart.push(item); // Quantità sufficiente, aggiungi al carrello validato
-          } else {
-            // Stock insufficiente, aggiorna la quantità
-            unavailableProducts.push({
-              ...item,
-              maxAvailable: product.stock,
-            });
+
+        if (product.available && product.stock >= item.quantity) {
+          validatedCart.push(item);
+        } else {
+          unavailableProducts.push({
+            ...item,
+            maxAvailable: product.stock,
+          });
+          if (product.stock > 0) {
             validatedCart.push({ ...item, quantity: product.stock });
           }
-        } else {
-          // Prodotto non disponibile
-          unavailableProducts.push({ ...item, maxAvailable: 0 });
         }
       } catch (error) {
-        console.error(`Error validating product ${item.name}:`, error);
+        console.error(`❌ Errore nella validazione di ${item.name}:`, error);
       }
     }
-  
+
     setCart(validatedCart);
-  
+
     if (unavailableProducts.length > 0) {
       alert(
-        `The following products were updated due to stock limitations:\n` +
+        `🚨 Disponibilità aggiornata per i seguenti prodotti:\n` +
           unavailableProducts
             .map(
               (p) =>
-                `${p.name}: requested ${p.quantity}, available ${p.maxAvailable}`
+                `${p.name}: richiesti ${p.quantity}, disponibili ${p.maxAvailable}`
             )
             .join('\n')
       );
     }
-  
     return validatedCart;
   };
-  
 
-  // Effettua un ordine
+  // 🚀 Invia ordine al server con validazione integrata
+  const sendOrderToServer = async (order) => {
+    const validatedOrder = await validateCart(order);
+    if (validatedOrder.length === 0) {
+      console.warn('⚡ Nessun prodotto disponibile per l’ordine. Sincronizzazione saltata.');
+      return;
+    }
+
+    try {
+      await fetch('http://localhost:4000/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(validatedOrder),
+      });
+      console.log('✅ Ordine inviato con successo al server!');
+      await db.cart.clear();
+      setCart([]);
+    } catch (error) {
+      console.error('❌ Errore durante l’invio dell’ordine:', error);
+      await db.offlineOrders.add({ data: validatedOrder });
+    }
+  };
+
+  // 🛒 Effettua un ordine (online/offline)
   const placeOrder = async () => {
     const validCart = await validateCart();
     if (validCart.length > 0) {
-      try {
-        await fetch('http://localhost:4000/orders', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(validCart),
-        });
+      if (navigator.onLine) {
+        await sendOrderToServer(validCart);
+      } else {
+        await db.offlineOrders.add({ data: validCart });
         await db.cart.clear();
         setCart([]);
-        console.log('Order placed successfully!');
-      } catch (error) {
-        console.error('Error placing order:', error);
+        console.log('📦 Ordine salvato offline. Verrà sincronizzato quando tornerai online.');
       }
     } else {
-      console.log('Order could not be placed due to validation errors.');
+      console.log('🚫 Ordine non effettuato per disponibilità insufficiente.');
     }
   };
 
   return (
     <div>
       <nav>
-        <Link to="/">Products</Link> | <Link to="/cart">Cart</Link>
+        <Link to="/">Products</Link> |{' '}
+        <Link to="/cart">
+          Cart ({cart.reduce((acc, item) => acc + item.quantity, 0)})
+        </Link>
       </nav>
       <Routes>
         <Route path="/" element={<ProductList products={PRODUCTS} addToCart={addToCart} />} />
@@ -140,6 +173,7 @@ function App() {
   );
 }
 
+// 🛍️ Lista prodotti
 function ProductList({ products, addToCart }) {
   return (
     <div>
@@ -156,6 +190,7 @@ function ProductList({ products, addToCart }) {
   );
 }
 
+// 🛒 Carrello
 function Cart({ cart, updateQuantity, removeFromCart, placeOrder }) {
   return (
     <div>
@@ -174,9 +209,7 @@ function Cart({ cart, updateQuantity, removeFromCart, placeOrder }) {
           ))}
         </ul>
       )}
-      {cart.length > 0 && (
-        <button onClick={placeOrder}>Place Order</button>
-      )}
+      {cart.length > 0 && <button onClick={placeOrder}>Place Order</button>}
     </div>
   );
 }
