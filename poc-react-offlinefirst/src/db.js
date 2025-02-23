@@ -1,13 +1,10 @@
 import Dexie from 'dexie';
 
-// Configura il database IndexedDB
-const db = new Dexie('EcommerceDB');
+const db = new Dexie('SportsEcommerceDB');
 
-// Definisci le tabelle e gli indici
 db.version(1).stores({
-  cart: '++id, name, price, quantity', // Aggiungi 'quantity'
+  cart: '++id, name, price, quantity',
   offlineOrders: '++id, data',
 });
-
 
 export default db;
