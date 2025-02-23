@@ -2,104 +2,103 @@
   "products": [
     {
       "id": "1",
-      "name": "Product A",
-      "price": 20,
-      "stock": 0,
-      "available": false
+      "name": "Babolat Pure Drive 110",
+      "price": 115,
+      "stock": 10,
+      "available": true,
+      "image": "../tennis1.jpg"
     },
     {
       "id": "2",
-      "name": "Product B",
-      "price": 40,
-      "stock": 10,
-      "available": true
+      "name": "Wilson Clash 108 V2",
+      "price": 180,
+      "stock": 8,
+      "available": true,
+      "image": "../tennis2.jpeg"
     },
     {
       "id": "3",
-      "name": "Product C",
-      "price": 60,
-      "stock": 0,
-      "available": false
+      "name": "Babolat Boost Rafa 2nd 2024",
+      "price": 150,
+      "stock": 5,
+      "available": true,
+      "image": "../tennis3.jpg"
+    },
+    {
+      "id": "4",
+      "name": "HEAD Radical 27",
+      "price": 150,
+      "stock": 12,
+      "available": true,
+      "image": "../tennis4.webp"
+    },
+    {
+      "id": "5",
+      "name": "Running Shoes",
+      "price": 120,
+      "stock": 15,
+      "available": true,
+      "image": "https://via.placeholder.com/150"
+    },
+    {
+      "id": "6",
+      "name": "Yoga Mat",
+      "price": 35,
+      "stock": 20,
+      "available": true,
+      "image": "https://via.placeholder.com/150"
+    },
+    {
+      "id": "7",
+      "name": "Basketball",
+      "price": 50,
+      "stock": 10,
+      "available": true,
+      "image": "https://via.placeholder.com/150"
+    },
+    {
+      "id": "8",
+      "name": "Tennis Racket",
+      "price": 150,
+      "stock": 7,
+      "available": true,
+      "image": "https://via.placeholder.com/150"
+    },
+    {
+      "id": "9",
+      "name": "Head Gravity Motion 2025",
+      "price": 200,
+      "stock": 9,
+      "available": true,
+      "image": "../padel1.jpg"
+    },
+    {
+      "id": "10",
+      "name": "Heroes Padel Ares 2023",
+      "price": 220,
+      "stock": 4,
+      "available": true,
+      "image": "../padel2.jpg"
+    },
+    {
+      "id": "11",
+      "name": "Padel Comfort Soft Adult",
+      "price": 50,
+      "stock": 18,
+      "available": true,
+      "image": "../padel3.avif"
     }
   ],
   "orders": [
     {
       "0": {
         "id": 1,
-        "name": "Product A",
-        "price": 20,
-        "quantity": 3
-      },
-      "id": "93cd"
-    },
-    {
-      "0": {
-        "id": 1,
-        "name": "Product A",
-        "price": 20,
-        "quantity": 13
-      },
-      "id": "bb93"
-    },
-    {
-      "0": {
-        "id": 2,
-        "name": "Product B",
-        "price": 40,
-        "quantity": 1
-      },
-      "1": {
-        "id": 3,
-        "name": "Product C",
-        "price": 60,
-        "quantity": 1
-      },
-      "id": "a1ea"
-    },
-    {
-      "0": {
-        "id": 1,
-        "name": "Product A",
-        "price": 20,
-        "quantity": 16
-      },
-      "id": "36ad"
-    },
-    {
-      "0": {
-        "id": 1,
-        "name": "Product A",
-        "price": 20,
-        "quantity": 1
-      },
-      "id": "4039"
-    },
-    {
-      "0": {
-        "id": 1,
-        "name": "Product A",
-        "price": 20,
-        "quantity": 3
-      },
-      "id": "701e"
-    },
-    {
-      "0": {
-        "id": 3,
-        "name": "Product C",
-        "price": 60,
-        "quantity": 3
-      },
-      "id": "cc08"
-    },
-    {
-      "0": {
-        "id": 1,
-        "name": "Product A",
-        "price": 20,
+        "name": "Babolat Pure Drive 110",
+        "price": 115,
+        "image": "../tennis1.jpg",
         "quantity": 5
       },
-      "id": "c58d"
+      "id": "cd8f"
     }
   ]
 }
